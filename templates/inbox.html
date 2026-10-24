@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>Inbox</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body>
+
+<nav>
+
+    <div class="logo">Campus Email</div>
+
+    <div>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/inbox">Inbox</a>
+        <a href="/compose">Compose</a>
+        <a href="/sent">Sent</a>
+        <a href="/logout">Logout</a>
+    </div>
+
+</nav>
+
+<div class="container">
+
+<h1>Inbox</h1>
+
+{% if emails %}
+
+{% for email in emails %}
+
+<div class="email">
+
+    <b>From:</b> {{ email["sender"] }}<br>
+
+    <b>Subject:</b> {{ email["subject"] }}<br>
+
+    <b>Time:</b> {{ email["timestamp"] }}
+
+    <hr>
+
+    <p>{{ email["message"] }}</p>
+
+</div>
+
+{% endfor %}
+
+{% else %}
+
+<div class="panel">
+    No emails in your inbox.
+</div>
+
+{% endif %}
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Campus Email Dashboard</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body>
+
+<nav>
+
+    <div class="logo">
+        Campus Email
+    </div>
+
+    <div>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/inbox">Inbox</a>
+        <a href="/compose">Compose</a>
+        <a href="/sent">Sent</a>
+        <a href="/logout">Logout</a>
+    </div>
+
+</nav>
+
+
+<div class="container">
+
+    <h1>Welcome, {{ username }}</h1>
+
+    <p>
+        {{ email }} |
+        {{ department }} Department
+    </p>
+
+
+    <!-- STATUS CARDS -->
+
+    <div class="cards">
+
+        <div class="card">
+
+            <h3>Network</h3>
+
+            <div class="online">
+                ● ONLINE
+            </div>
+
+            <p>Campus LAN</p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>Email Server</h3>
+
+            <div class="online">
+                ● ONLINE
+            </div>
+
+            <p>SMTP / POP3</p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>Application</h3>
+
+            <div class="online">
+                ● ACTIVE
+            </div>
+
+            <p>Python Flask</p>
+
+        </div>
+
+    </div>
+
+
+    <!-- NETWORK MONITORING -->
+
+    <div class="panel">
+
+        <h2>Network Monitoring</h2>
+
+        {% for device, status in network.items() %}
+
+        <div class="status-row">
+
+            <span>{{ device }}</span>
+
+            <span class="online">
+                ● {{ status }}
+            </span>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+
+    <!-- SERVICES -->
+
+    <div class="panel">
+
+        <h2>Email Services</h2>
+
+        {% for service, status in services.items() %}
+
+        <div class="status-row">
+
+            <span>{{ service }}</span>
+
+            <span class="online">
+                ● {{ status }}
+            </span>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+
+    <!-- TOPOLOGY -->
+
+    <div class="panel">
+
+        <h2>Campus Network Topology</h2>
+
+        <pre>
+
+                         EMAIL SERVER
+                              |
+                         CORE SWITCH
+                       /      |      \
+                      /       |       \
+                   CSE-SW    AI-SW   ADMIN-SW
+                   / | \     / | \    / | \
+                  PC PC PC  PC PC PC PC PC PC
+
+        </pre>
+
+    </div>
+
+
+    <!-- ACTIVITY LOG -->
+
+    <div class="panel">
+
+        <h2>Activity Log</h2>
+
+        {% if logs %}
+
+            {% for log in logs %}
+
+            <div class="log">
+                {{ log }}
+            </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <p>No activity recorded.</p>
+
+        {% endif %}
+
+    </div>
+
+
+</div>
+
+</body>
+
+</html>

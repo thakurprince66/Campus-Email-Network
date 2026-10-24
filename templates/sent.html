@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>Sent Mail</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body>
+
+<nav>
+
+    <div class="logo">Campus Email</div>
+
+    <div>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/inbox">Inbox</a>
+        <a href="/compose">Compose</a>
+        <a href="/sent">Sent</a>
+        <a href="/logout">Logout</a>
+    </div>
+
+</nav>
+
+<div class="container">
+
+<h1>Sent Mail</h1>
+
+{% if emails %}
+
+{% for email in emails %}
+
+<div class="email">
+
+    <b>To:</b> {{ email["receiver"] }}<br>
+
+    <b>Subject:</b> {{ email["subject"] }}<br>
+
+    <b>Time:</b> {{ email["timestamp"] }}
+
+    <hr>
+
+    <p>{{ email["message"] }}</p>
+
+</div>
+
+{% endfor %}
+
+{% else %}
+
+<div class="panel">
+    No sent emails.
+</div>
+
+{% endif %}
+
+</div>
+
+</body>
+</html>

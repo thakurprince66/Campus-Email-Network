@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>Compose Email</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body>
+
+<nav>
+
+    <div class="logo">Campus Email</div>
+
+    <div>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/inbox">Inbox</a>
+        <a href="/compose">Compose</a>
+        <a href="/sent">Sent</a>
+        <a href="/logout">Logout</a>
+    </div>
+
+</nav>
+
+<div class="container">
+
+<h1>Compose Email</h1>
+
+{% if error %}
+<div class="error">{{ error }}</div>
+{% endif %}
+
+<form method="POST" class="compose">
+
+    <label>To</label>
+
+    <input
+        type="email"
+        name="receiver"
+        placeholder="bob@college.com"
+        required>
+
+    <label>Subject</label>
+
+    <input
+        type="text"
+        name="subject"
+        placeholder="Enter subject"
+        required>
+
+    <label>Message</label>
+
+    <textarea
+        name="message"
+        rows="10"
+        placeholder="Write your message..."
+        required></textarea>
+
+    <button type="submit">
+        Send Email
+    </button>
+
+</form>
+
+</div>
+
+</body>
+</html>
