@@ -37,7 +37,7 @@ def init_db():
     users = [
         ("alice", "1234", "alice@college.com", "CSE"),
         ("bob", "1234", "bob@college.com", "AI"),
-        ("charlie", "1234", "charlie@college.com", "ADMIN"),
+        ("charls", "1234", "charls@college.com", "ADMIN"),
         ("david", "1234", "david@college.com", "CSE"),
         ("jason","1234","jason@college.com","CSE"),
         ("prince","1234","prince@college.com","ADMIN")
