@@ -115,7 +115,6 @@ def sent():
         emails=emails
     )
 
-
 @app.route("/compose", methods=["GET", "POST"])
 def compose():
 
@@ -124,47 +123,100 @@ def compose():
 
     if request.method == "POST":
 
-        receiver = request.form["receiver"]
-        subject = request.form["subject"]
-        message = request.form["message"]
+        receiver = request.form.get("receiver", "").strip().lower()
+        subject = request.form.get("subject", "").strip()
+        message = request.form.get("message", "").strip()
+
+        # Validate required fields
+        if not receiver or not subject or not message:
+            return render_template(
+                "compose.html",
+                error="All fields are required.",
+                receiver=receiver,
+                subject=subject,
+                message=message
+            )
+
+        # Basic email format validation
+        if (
+            "@" not in receiver
+            or receiver.count("@") != 1
+            or receiver.startswith("@")
+            or receiver.endswith("@")
+            or "." not in receiver.rsplit("@", 1)[1]
+        ):
+            return render_template(
+                "compose.html",
+                error="Please enter a valid recipient email address.",
+                receiver=receiver,
+                subject=subject,
+                message=message
+            )
+
+        # Limit input sizes
+        if len(receiver) > 254 or len(subject) > 200 or len(message) > 10000:
+            return render_template(
+                "compose.html",
+                error="Input is too long. Subject: maximum 200 characters; message: maximum 10,000 characters.",
+                receiver=receiver,
+                subject=subject,
+                message=message
+            )
 
         conn = get_db()
 
-        # Check whether receiver exists
-        user = conn.execute("""
-            SELECT * FROM users
-            WHERE email = ?
-        """, (receiver,)).fetchone()
+        try:
+            # Confirm that the recipient is a registered user
+            user = conn.execute("""
+                SELECT email FROM users
+                WHERE lower(email) = ?
+            """, (receiver,)).fetchone()
 
-        if not user:
-            conn.close()
+            if not user:
+                return render_template(
+                    "compose.html",
+                    error="Recipient email does not exist.",
+                    receiver=receiver,
+                    subject=subject,
+                    message=message
+                )
+
+            # Save the internal email
+            conn.execute("""
+                INSERT INTO emails
+                (sender, receiver, subject, message)
+                VALUES (?, ?, ?, ?)
+            """, (
+                session["email"],
+                user["email"],
+                subject,
+                message
+            ))
+
+            conn.commit()
+
+        except Exception:
+            conn.rollback()
+            app.logger.exception("Failed to send an internal email")
 
             return render_template(
                 "compose.html",
-                error="Receiver email does not exist."
+                error="Unable to send the email right now. Please try again.",
+                receiver=receiver,
+                subject=subject,
+                message=message
             )
 
-        conn.execute("""
-            INSERT INTO emails
-            (sender, receiver, subject, message)
-            VALUES (?, ?, ?, ?)
-        """, (
-            session["email"],
-            receiver,
-            subject,
-            message
-        ))
-
-        conn.commit()
-        conn.close()
+        finally:
+            conn.close()
 
         add_log(
-            f"Email sent from {session['email']} to {receiver}"
+            f"Email sent from {session['email']} to {user['email']}"
         )
 
         return redirect(url_for("sent"))
-    return render_template("compose.html")
 
+    return render_template("compose.html")
 
 @app.route("/logout")
 def logout():
