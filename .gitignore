@@ -5,3 +5,6 @@ campus_email_backup.db
 .env
 .env.*
 !.env.example
+campus_email_pre_password_backup.db
+
+campus_email_pre_password_backup.db

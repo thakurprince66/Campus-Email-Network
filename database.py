@@ -1,4 +1,5 @@
 import sqlite3
+from werkzeug.security import generate_password_hash
 
 DATABASE = "campus_email.db"
 
@@ -52,6 +53,23 @@ def init_db():
             """, user)
         except sqlite3.IntegrityError:
             pass
+
+        # Migrate existing plaintext passwords to secure hashes
+    existing_users = conn.execute(
+        "SELECT id, password FROM users"
+    ).fetchall()
+
+    for user in existing_users:
+        password = user["password"]
+
+        # Skip passwords that are already hashed
+        if not password.startswith(("scrypt:", "pbkdf2:")):
+            hashed_password = generate_password_hash(password)
+
+            conn.execute(
+                "UPDATE users SET password = ? WHERE id = ?",
+                (hashed_password, user["id"])
+            )
 
     conn.commit()
     conn.close()

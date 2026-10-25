@@ -1,10 +1,10 @@
-
 import os
 from dotenv import load_dotenv
 from flask import Flask, render_template, request, redirect, session, url_for
 from database import init_db, get_db
 from network_monitor import get_network_status, get_services, get_logs, add_log
 from datetime import datetime
+from werkzeug.security import check_password_hash
 
 load_dotenv()
 
@@ -20,7 +20,6 @@ if not app.config["SECRET_KEY"]:
 # Initialize database
 init_db()
 
-
 @app.route("/", methods=["GET", "POST"])
 def login():
 
@@ -33,13 +32,13 @@ def login():
 
         user = conn.execute("""
             SELECT * FROM users
-            WHERE username = ? AND password = ?
-        """, (username, password)).fetchone()
+            WHERE username = ?
+        """, (username,)).fetchone()
 
         conn.close()
 
-        if user:
-            session["username"] = username
+        if user and check_password_hash(user["password"], password):
+            session["username"] = user["username"]
             session["email"] = user["email"]
             session["department"] = user["department"]
 
@@ -51,7 +50,6 @@ def login():
         )
 
     return render_template("login.html")
-
 
 @app.route("/dashboard")
 def dashboard():
