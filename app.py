@@ -1,11 +1,21 @@
+
+import os
+from dotenv import load_dotenv
 from flask import Flask, render_template, request, redirect, session, url_for
 from database import init_db, get_db
 from network_monitor import get_network_status, get_services, get_logs, add_log
 from datetime import datetime
 
-app = Flask(__name__)
-app.secret_key = "campus-email-secret"
+load_dotenv()
 
+app = Flask(__name__)
+
+app.config["SECRET_KEY"] = os.getenv("FLASK_SECRET_KEY")
+
+if not app.config["SECRET_KEY"]:
+    raise RuntimeError(
+        "FLASK_SECRET_KEY is missing. Please configure it in your .env file."
+    )
 
 # Initialize database
 init_db()
